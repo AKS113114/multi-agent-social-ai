@@ -9,7 +9,9 @@ async function checkOllamaStatus() {
 
   try {
     const res = await fetch('/api/agents/status');
-    const data = await res.json();
+    const text = await res.text();
+    let data = {};
+    try { data = JSON.parse(text); } catch (e) {}
     
     if (data.status === 'ok') {
       statusEl.innerHTML = `<span class="status-dot"></span> Ollama: ${data.target_model} (Online)`;
@@ -50,9 +52,14 @@ function setupEventListeners() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title, human_brief: brief })
         });
-        const data = await res.json();
-        if (data.status === 'success') {
+        const text = await res.text();
+        let data = {};
+        try { data = JSON.parse(text); } catch (e) {}
+        
+        if (data.status === 'success' && data.campaign_id) {
           window.location.href = `/campaign/${data.campaign_id}`;
+        } else {
+          window.location.reload();
         }
       } catch (err) {
         alert('Failed to create campaign: ' + err.message);
@@ -108,7 +115,7 @@ async function approvePost(postId, action) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: action })
     });
-    const data = await res.json();
+    await res.text();
     window.location.reload();
   } catch (err) {
     alert('Failed to approve post: ' + err.message);
