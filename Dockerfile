@@ -21,11 +21,11 @@ ENV PORT=10000
 ENV OLLAMA_BASE_URL=http://127.0.0.1:11434
 ENV OLLAMA_MODEL=gemma3:4b
 
-# Create startup script to launch Ollama and FastAPI together
+# Create startup script to launch Ollama and FastAPI together without blocking port binding
 RUN echo '#!/bin/sh\n\
 ollama serve &\n\
-sleep 5\n\
-ollama pull gemma3:4b || true\n\
+sleep 2\n\
+(ollama pull gemma3:4b || true) &\n\
 python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT\n\
 ' > /app/start.sh && chmod +x /app/start.sh
 
