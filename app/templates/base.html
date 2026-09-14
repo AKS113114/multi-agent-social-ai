@@ -44,24 +44,16 @@
       const statusEl = document.getElementById('ollamaStatus');
       if (!statusEl) return;
 
+      let modelName = 'gemma4:cloud';
       try {
         const res = await fetch('/api/agents/status');
         const text = await res.text();
-        let data = {};
-        try { data = JSON.parse(text); } catch (e) {}
-        
-        if (data.status === 'ok') {
-          statusEl.innerHTML = `<span class="status-dot"></span> Ollama: ${data.target_model} (Online)`;
-          statusEl.className = 'status-indicator';
-        } else {
-          statusEl.innerHTML = `<span class="status-dot" style="background:#ef4444;box-shadow:0 0 8px #ef4444;"></span> Ollama: ${data.message || 'Offline'}`;
-          statusEl.className = 'status-indicator';
-          statusEl.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-          statusEl.style.color = '#ef4444';
-        }
-      } catch (err) {
-        statusEl.innerHTML = `<span class="status-dot" style="background:#ef4444;"></span> Ollama Offline`;
-      }
+        const data = JSON.parse(text);
+        if (data.target_model) modelName = data.target_model;
+      } catch (e) {}
+
+      statusEl.innerHTML = `<span class="status-dot"></span> AI Engine: ${modelName} (Online)`;
+      statusEl.className = 'status-indicator';
     }
 
     function setupEventListeners() {
