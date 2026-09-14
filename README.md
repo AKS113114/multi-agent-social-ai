@@ -1,9 +1,11 @@
 # Multi-Agent Social Media AI Company
 
-> 🚀 **Live Public Web Demo**: [https://multi-agent-social-ai-1.onrender.com](https://multi-agent-social-ai-1.onrender.com)
+[![Live Web App](https://img.shields.io/badge/Live%20Demo-https%3A%2F%2Fmulti--agent--social--ai--1.onrender.com-brightgreen?style=for-the-badge&logo=render)](https://multi-agent-social-ai-1.onrender.com)
+
+> 🚀 **Live Public URL**: [https://multi-agent-social-ai-1.onrender.com](https://multi-agent-social-ai-1.onrender.com)
 >
 > **Prodigal AI Intern Hiring — Round 1 Task 1 Submission**
-> A fully local/cloud multi-agent AI social media company running on Ollama (`gemma3:4b`), featuring 8 specialized agents, compliance guardrails, human approval gate, 3-channel mock social platform with hidden signals, community manager, and a closed-loop weekly analytics improvement engine.
+> A multi-agent AI social media company running on Ollama (`gemma4:cloud` / `gemma3:4b`), featuring 8 specialized agents, compliance guardrails, human approval gate, 3-channel mock social platform with hidden signals, community manager, and a closed-loop weekly analytics improvement engine.
 
 ---
 
