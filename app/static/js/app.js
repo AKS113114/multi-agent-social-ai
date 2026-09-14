@@ -75,26 +75,24 @@ async function triggerPipeline(campaignId, action) {
     if (action === 'publish_w2') endpoint = `/api/campaigns/${campaignId}/publish-week?week_number=2`;
 
     const res = await fetch(endpoint, { method: 'POST' });
-    const contentType = res.headers.get('content-type') || '';
+    const text = await res.text();
 
     if (!res.ok) {
-      if (contentType.includes('application/json')) {
-        const errData = await res.json();
-        throw new Error(errData.detail || errData.message || `HTTP ${res.status}`);
-      } else {
-        const text = await res.text();
-        if (res.status === 504 || text.includes('504') || text.includes('Timeout')) {
-          alert('LLM generation is processing in the cloud container. Reloading page...');
-          window.location.reload();
-          return;
-        }
-        throw new Error(`Server returned HTTP ${res.status}: ${text.substring(0, 100)}`);
+      if (res.status === 504 || text.includes('504') || text.includes('Timeout')) {
+        alert('LLM generation is processing in the cloud container. Reloading page...');
+        window.location.reload();
+        return;
       }
+      let errorMsg = `Server returned HTTP ${res.status}`;
+      try {
+        const json = JSON.parse(text);
+        if (json.detail) errorMsg = json.detail;
+      } catch (e) {
+        if (text) errorMsg += `: ${text.substring(0, 100)}`;
+      }
+      throw new Error(errorMsg);
     }
 
-    if (contentType.includes('application/json')) {
-      await res.json();
-    }
     window.location.reload();
   } catch (err) {
     alert('Pipeline execution notice: ' + err.message);
