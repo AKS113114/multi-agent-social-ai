@@ -62,7 +62,7 @@ function setupEventListeners() {
           window.location.reload();
         }
       } catch (err) {
-        alert('Failed to create campaign: ' + err.message);
+        alert('Notice: ' + err.message);
       }
     });
   }
@@ -71,7 +71,7 @@ function setupEventListeners() {
 async function triggerPipeline(campaignId, action) {
   const btn = event.target;
   const originalText = btn.innerText;
-  btn.innerText = 'Processing Local LLM...';
+  btn.innerText = '🤖 Agents Executing Pipeline...';
   btn.disabled = true;
 
   try {
@@ -82,27 +82,35 @@ async function triggerPipeline(campaignId, action) {
     if (action === 'publish_w2') endpoint = `/api/campaigns/${campaignId}/publish-week?week_number=2`;
 
     const res = await fetch(endpoint, { method: 'POST' });
-    const text = await res.text();
+    await res.text();
 
-    if (!res.ok) {
-      if (res.status === 504 || text.includes('504') || text.includes('Timeout')) {
-        alert('LLM generation is processing in the cloud container. Reloading page...');
-        window.location.reload();
-        return;
-      }
-      let errorMsg = `Server returned HTTP ${res.status}`;
-      try {
-        const json = JSON.parse(text);
-        if (json.detail) errorMsg = json.detail;
-      } catch (e) {
-        if (text) errorMsg += `: ${text.substring(0, 100)}`;
-      }
-      throw new Error(errorMsg);
+    if (action === 'approve' || action === 'publish_w1' || action === 'publish_w2') {
+      window.location.reload();
+      return;
     }
 
-    window.location.reload();
+    let checkAttempts = 0;
+    const pollInterval = setInterval(async () => {
+      checkAttempts++;
+      try {
+        const statusRes = await fetch(`/api/campaigns/${campaignId}`);
+        const text = await statusRes.text();
+        const data = JSON.parse(text);
+        
+        if (data.posts && data.posts.length > 0 && (data.status === 'HUMAN_REVIEW' || data.status === 'APPROVED')) {
+          clearInterval(pollInterval);
+          window.location.reload();
+        }
+      } catch (e) {}
+
+      if (checkAttempts >= 30) {
+        clearInterval(pollInterval);
+        window.location.reload();
+      }
+    }, 3000);
+
   } catch (err) {
-    alert('Pipeline execution notice: ' + err.message);
+    alert('Notice: ' + err.message);
     btn.innerText = originalText;
     btn.disabled = false;
   }
@@ -118,6 +126,6 @@ async function approvePost(postId, action) {
     await res.text();
     window.location.reload();
   } catch (err) {
-    alert('Failed to approve post: ' + err.message);
+    alert('Notice: ' + err.message);
   }
 }

@@ -93,10 +93,31 @@ def get_campaign(campaign_id: str, db: Session = Depends(get_db)):
         "posts": posts
     }
 
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from app.database.database import get_db, SessionLocal
+
+def _run_week1_bg(campaign_id: str):
+    db = SessionLocal()
+    try:
+        CampaignService.run_week1_pipeline(db, campaign_id)
+    except Exception as e:
+        print(f"Background Week 1 error: {e}")
+    finally:
+        db.close()
+
+def _run_week2_bg(campaign_id: str):
+    db = SessionLocal()
+    try:
+        CampaignService.run_week2_pipeline(db, campaign_id)
+    except Exception as e:
+        print(f"Background Week 2 error: {e}")
+    finally:
+        db.close()
+
 @router.post("/{campaign_id}/run-week1")
-def run_week1(campaign_id: str, db: Session = Depends(get_db)):
-    res = CampaignService.run_week1_pipeline(db, campaign_id)
-    return res
+def run_week1(campaign_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    background_tasks.add_task(_run_week1_bg, campaign_id)
+    return {"status": "processing", "message": "Week 1 pipeline started in background", "campaign_id": campaign_id}
 
 @router.post("/{campaign_id}/approve-campaign")
 def approve_campaign(campaign_id: str, db: Session = Depends(get_db)):
@@ -109,6 +130,6 @@ def publish_week(campaign_id: str, week_number: int = 1, db: Session = Depends(g
     return res
 
 @router.post("/{campaign_id}/run-week2")
-def run_week2(campaign_id: str, db: Session = Depends(get_db)):
-    res = CampaignService.run_week2_pipeline(db, campaign_id)
-    return res
+def run_week2(campaign_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    background_tasks.add_task(_run_week2_bg, campaign_id)
+    return {"status": "processing", "message": "Week 2 pipeline started in background", "campaign_id": campaign_id}
