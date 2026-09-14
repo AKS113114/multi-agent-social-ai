@@ -75,10 +75,29 @@ async function triggerPipeline(campaignId, action) {
     if (action === 'publish_w2') endpoint = `/api/campaigns/${campaignId}/publish-week?week_number=2`;
 
     const res = await fetch(endpoint, { method: 'POST' });
-    const data = await res.json();
+    const contentType = res.headers.get('content-type') || '';
+
+    if (!res.ok) {
+      if (contentType.includes('application/json')) {
+        const errData = await res.json();
+        throw new Error(errData.detail || errData.message || `HTTP ${res.status}`);
+      } else {
+        const text = await res.text();
+        if (res.status === 504 || text.includes('504') || text.includes('Timeout')) {
+          alert('LLM generation is processing in the cloud container. Reloading page...');
+          window.location.reload();
+          return;
+        }
+        throw new Error(`Server returned HTTP ${res.status}: ${text.substring(0, 100)}`);
+      }
+    }
+
+    if (contentType.includes('application/json')) {
+      await res.json();
+    }
     window.location.reload();
   } catch (err) {
-    alert('Pipeline execution error: ' + err.message);
+    alert('Pipeline execution notice: ' + err.message);
     btn.innerText = originalText;
     btn.disabled = false;
   }
