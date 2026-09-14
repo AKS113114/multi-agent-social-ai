@@ -14,7 +14,11 @@ class Settings:
     # Database Configuration
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     DATA_DIR: str = os.path.join(BASE_DIR, "data")
-    DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(DATA_DIR, 'social_agency.db')}")
+    
+    def __init__(self):
+        os.makedirs(self.DATA_DIR, exist_ok=True)
+        
+    DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'social_agency.db')}")
     
     # Channels
     CHANNELS: Dict[str, Any] = {
