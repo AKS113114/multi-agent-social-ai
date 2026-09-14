@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: multi-agent-social-ai
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python run.py
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: OLLAMA_BASE_URL
+        value: http://localhost:11434
+      - key: OLLAMA_MODEL
+        value: gemma3:4b
