@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Agent Execution Trace Log{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">🔍 Inter-Agent Communication & Execution Trace</h1>
+    <p style="color: var(--text-muted);">Real-time log of specialized agents passing work, reviewing compliance, handling rejections, and handoffs.</p>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-title">Select Campaign Trace</div>
+  <select onchange="window.location.href='/trace?campaign_id=' + this.value" class="form-control" style="max-width: 400px;">
+    {% for c in campaigns %}
+      <option value="{{ c.id }}" {% if selected_campaign_id == c.id %}selected{% endif %}>{{ c.title }} ({{ c.id }})</option>
+    {% endfor %}
+  </select>
+</div>
+
+<div class="timeline">
+  {% for trace in traces %}
+  <div class="timeline-item">
+    <div class="timeline-content">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+        <div>
+          <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; font-size: 0.85rem;">{{ trace.agent }}</span>
+          <span style="font-weight: 600; margin-left: 0.5rem; font-size: 0.95rem;">{{ trace.action }}</span>
+        </div>
+        <div>
+          <span class="badge badge-{{ trace.status.lower() }}">{{ trace.status }}</span>
+          {% if trace.revision_count > 0 %}
+            <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; margin-left: 0.3rem;">Revision #{{ trace.revision_count }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div style="background: var(--bg-dark); padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.85rem; font-family: monospace; border: 1px solid var(--border-color); margin-bottom: 0.5rem;">
+        <div style="color: var(--text-muted); margin-bottom: 0.3rem;">INPUT: {{ trace.input_summary }}</div>
+        <div style="color: #60a5fa;">OUTPUT: {{ trace.output_summary }}</div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted);">
+        <span>Timestamp: {{ trace.timestamp }}</span>
+        {% if trace.handoff_to %}
+          <span>Handoff to: <strong style="color: var(--accent-primary);">{{ trace.handoff_to }}</strong> &rarr;</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p style="color: var(--text-muted);">No trace logs recorded for this campaign yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

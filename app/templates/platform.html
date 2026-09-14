@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Mock Social Media Platform{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">📱 Mock Social Media Platform</h1>
+    <p style="color: var(--text-muted);">Simulated social network testbed with multi-channel feeds, hidden engagement signals, and audience comments.</p>
+  </div>
+  <div style="display: flex; gap: 0.5rem;">
+    <a href="/platform?channel=Pulse" class="btn {% if selected_channel != 'Pulse' %}btn-secondary{% endif %}">Pulse (Video)</a>
+    <a href="/platform?channel=Forum" class="btn {% if selected_channel != 'Forum' %}btn-secondary{% endif %}">Forum (Discussion)</a>
+    <a href="/platform?channel=ProNet" class="btn {% if selected_channel != 'ProNet' %}btn-secondary{% endif %}">ProNet (B2B)</a>
+    <a href="/platform" class="btn {% if selected_channel %}btn-secondary{% endif %}">All Channels</a>
+  </div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+  {% for post in posts %}
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+      <div>
+        <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">{{ post.channel }}</span>
+        <span style="font-size: 0.85rem; color: var(--text-muted); margin-left: 0.5rem;">Published Week {{ post.week_number }} | Slot: {{ post.scheduled_time }}</span>
+      </div>
+      <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">ER: {{ post.metrics.engagement_rate }}%</span>
+    </div>
+
+    <!-- POST CONTENT BODY -->
+    <div style="background: var(--bg-dark); padding: 1.25rem; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+      <h3 style="color: #fff; font-size: 1.05rem; margin-bottom: 0.5rem;">{{ post.hook }}</h3>
+      <p style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 0.75rem;">{{ post.post_copy }}</p>
+      <p style="font-size: 0.85rem; color: var(--accent-warning); font-weight: 600;">CTA: {{ post.cta }}</p>
+      <div style="margin-top: 0.5rem;">
+        {% for tag in post.hashtags %}
+          <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 0.4rem;">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- SIMULATED METRICS DISPLAY -->
+    <div class="grid-3" style="background: rgba(30, 41, 59, 0.5); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; gap: 0.5rem;">
+      <div>👁️ Impressions: <strong>{{ post.metrics.impressions }}</strong></div>
+      <div>❤️ Likes: <strong>{{ post.metrics.likes }}</strong></div>
+      <div>💬 Comments: <strong>{{ post.metrics.comments_count }}</strong></div>
+      <div>🔄 Shares: <strong>{{ post.metrics.shares }}</strong></div>
+      <div>📌 Saves: <strong>{{ post.metrics.saves }}</strong></div>
+      <div>🖱️ Clicks: <strong>{{ post.metrics.clicks }}</strong></div>
+    </div>
+
+    <!-- AUDIENCE COMMENTS & COMMUNITY MANAGER -->
+    <h4 style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem;">Audience Comments & Community Manager Activity</h4>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      {% for comment in post.comments %}
+      <div style="background: var(--bg-dark); padding: 0.75rem 1rem; border-radius: 8px; border-left: 3px solid {% if comment.is_sensitive %}#ef4444{% else %}#6366f1{% endif %}; font-size: 0.85rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+          <strong style="color: #fff;">@{{ comment.author }}</strong>
+          <span class="badge {% if comment.is_sensitive %}badge-danger{% else %}badge-draft{% endif %}">{{ comment.sentiment }}</span>
+        </div>
+        <p style="color: #cbd5e1;">"{{ comment.content }}"</p>
+        
+        {% if comment.community_response %}
+        <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 2px solid var(--accent-success); color: var(--accent-success);">
+          <strong>🤖 CommunityManagerAgent Response:</strong>
+          <p style="color: #a7f3d0;">"{{ comment.community_response }}"</p>
+        </div>
+        {% endif %}
+      </div>
+      {% else %}
+      <p style="font-size: 0.85rem; color: var(--text-muted);">No comments generated yet for this post.</p>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="card" style="text-align: center; padding: 3rem;">
+    <p style="color: var(--text-muted);">No published posts on the mock platform yet. Publish an approved campaign to populate the feed.</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

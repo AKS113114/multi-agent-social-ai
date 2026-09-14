@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}{{ campaign.title }} — Campaign Details{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <h1 class="page-title">{{ campaign.title }}</h1>
+      <span class="badge badge-{{ campaign.status.lower() }}">{{ campaign.status }}</span>
+      <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">Week {{ campaign.week_number }}</span>
+    </div>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">ID: {{ campaign.id }}</p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    {% if campaign.status == 'DRAFT' %}
+      <button onclick="triggerPipeline('{{ campaign.id }}', 'run_w1')" class="btn">🚀 Run Week 1 Agent Pipeline</button>
+    {% elif campaign.status == 'HUMAN_REVIEW' %}
+      <a href="/review/{{ campaign.id }}" class="btn btn-warning">⚠️ Open Human Approval Gate</a>
+    {% elif campaign.status == 'APPROVED' %}
+      <button onclick="triggerPipeline('{{ campaign.id }}', 'publish_w1')" class="btn btn-success">📲 Publish & Simulate Week {{ campaign.week_number }}</button>
+    {% elif campaign.status == 'IMPROVEMENT' or campaign.status == 'ANALYZING' %}
+      <button onclick="triggerPipeline('{{ campaign.id }}', 'run_w2')" class="btn">🔄 Run Week 2 Strategy Improvement Loop</button>
+    {% endif %}
+    <a href="/trace?campaign_id={{ campaign.id }}" class="btn btn-secondary">🔍 View Agent Trace</a>
+  </div>
+</div>
+
+<!-- HUMAN BRIEF CARD -->
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-title">Original Human Brief</div>
+  <p style="font-size: 1rem; color: #cbd5e1; background: var(--bg-dark); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+    "{{ campaign.human_brief }}"
+  </p>
+</div>
+
+<!-- STRATEGY AGENT DECOMPOSITION -->
+{% if campaign.target_audience %}
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-title">
+    <span>Strategy Agent Decomposition</span>
+    <span class="badge" style="background: rgba(16,185,129,0.2); color: #34d399;">StrategyAgent Active</span>
+  </div>
+  <div class="grid-3" style="margin-top: 1rem;">
+    <div>
+      <h4 style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Target Audience</h4>
+      <p style="font-weight: 600; margin-top: 0.25rem;">{{ campaign.target_audience.demographic }}</p>
+      <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+        {% for p in campaign.target_audience.pain_points %}
+          <li>{{ p }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div>
+      <h4 style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Content Pillars</h4>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem;">
+        {% for pillar in campaign.content_pillars %}
+          <span class="badge" style="background: var(--bg-dark); color: #fff; border: 1px solid var(--border-color);">{{ pillar }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    <div>
+      <h4 style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Campaign KPIs</h4>
+      <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+        {% for kpi in campaign.kpis %}
+          <li>{{ kpi }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- POSTS LIST & CREATIVE BRIEFS -->
+<h2 style="margin-bottom: 1rem; font-size: 1.3rem;">Campaign Posts & Creative Direction</h2>
+<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+  {% for post in campaign.posts %}
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+      <div>
+        <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; margin-right: 0.5rem;">{{ post.channel }}</span>
+        <span class="badge" style="background: var(--bg-dark); color: var(--text-muted); border: 1px solid var(--border-color);">Format: {{ post.format }}</span>
+        <span class="badge" style="background: var(--bg-dark); color: var(--text-muted); border: 1px solid var(--border-color); margin-left: 0.5rem;">Slot: {{ post.scheduled_time }}</span>
+      </div>
+      <div>
+        <span class="badge badge-{{ post.compliance_status.lower() }}">Compliance: {{ post.compliance_status }}</span>
+        <span class="badge badge-{{ post.human_approval_status.lower() }}" style="margin-left: 0.4rem;">Human Gate: {{ post.human_approval_status }}</span>
+      </div>
+    </div>
+
+    <div style="background: var(--bg-dark); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+      <h4 style="color: var(--accent-primary); font-size: 0.95rem; margin-bottom: 0.4rem;">Hook: "{{ post.hook }}"</h4>
+      <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">{{ post.copy }}</p>
+      <p style="font-size: 0.85rem; color: var(--accent-warning); font-weight: 600;">CTA: {{ post.cta }}</p>
+      <div style="margin-top: 0.4rem;">
+        {% for tag in post.hashtags %}
+          <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 0.4rem;">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if post.creative_brief %}
+    <div style="border-top: 1px dashed var(--border-color); padding-top: 0.75rem; font-size: 0.85rem;">
+      <h5 style="color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; margin-bottom: 0.3rem;">🎨 Creative Agent Brief ({{ post.creative_brief.asset_type }})</h5>
+      <p><strong>Visual Concept:</strong> {{ post.creative_brief.visual_concept }}</p>
+      <p><strong>Scene Composition:</strong> {{ post.creative_brief.scene_description }}</p>
+      <p><strong>On-Screen Text:</strong> "{{ post.creative_brief.on_screen_text }}"</p>
+    </div>
+    {% endif %}
+
+    {% if post.compliance_reviews %}
+    <div style="margin-top: 0.75rem; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); padding: 0.75rem; border-radius: 6px; font-size: 0.85rem;">
+      <h5 style="color: var(--accent-warning);">Compliance Review (Attempt #{{ post.compliance_reviews[-1].attempt }}): Score {{ post.compliance_reviews[-1].score }}/100</h5>
+      <p style="color: var(--text-muted);">{{ post.compliance_reviews[-1].reasoning }}</p>
+    </div>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="card" style="text-align: center; padding: 2rem;">
+    <p style="color: var(--text-muted);">No posts generated yet. Run the Week 1 Agent Pipeline to generate content.</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

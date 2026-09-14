@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Social Media AI Agency{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="brand">
+      🤖 Prodigal Multi-Agent AI
+      <span class="brand-badge">Local Ollama</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/" class="{% if active_tab == 'dashboard' %}active{% endif %}">Dashboard</a></li>
+      <li><a href="/platform" class="{% if active_tab == 'platform' %}active{% endif %}">Mock Platform</a></li>
+      <li><a href="/trace" class="{% if active_tab == 'trace' %}active{% endif %}">Agent Trace Log</a></li>
+      <li><a href="/analytics" class="{% if active_tab == 'analytics' %}active{% endif %}">Analytics & Comparison</a></li>
+    </ul>
+    <div id="ollamaStatus" class="status-indicator">
+      <span class="status-dot"></span> Checking Ollama...
+    </div>
+  </nav>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>Prodigal AI Intern Task 1 — Multi-Agent Social Media AI Company | Powered by Local Ollama (gemma3:4b) & SQLite</p>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

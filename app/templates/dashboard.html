@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Multi-Agent AI Agency{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Multi-Agent Social Media Agency</h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">Automated campaign strategy, creation, compliance, publishing & weekly analytics improvement loop.</p>
+  </div>
+  <button id="openCreateModal" class="btn">
+    <span>+</span> Create New Campaign
+  </button>
+</div>
+
+<div class="grid-3">
+  <div class="card">
+    <div class="card-title">Active Campaigns</div>
+    <div style="font-size: 2.2rem; font-weight: 700; color: var(--accent-primary);">{{ campaigns|length }}</div>
+    <p style="color: var(--text-muted); font-size: 0.85rem;">Managed by Orchestrator Agent</p>
+  </div>
+  <div class="card">
+    <div class="card-title">LLM Runtime</div>
+    <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-success);">Ollama Local</div>
+    <p style="color: var(--text-muted); font-size: 0.85rem;">Model: gemma3:4b (Q4_K_M)</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Mock Platform Channels</div>
+    <div style="font-size: 1.2rem; font-weight: 600; display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+      <span class="badge" style="background: rgba(236,72,153,0.2); color: #f472b6;">Pulse (Short)</span>
+      <span class="badge" style="background: rgba(59,130,246,0.2); color: #60a5fa;">Forum (Text)</span>
+      <span class="badge" style="background: rgba(16,185,129,0.2); color: #34d399;">ProNet (B2B)</span>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-bottom: 1rem; font-size: 1.3rem;">Campaign Portfolio</h2>
+<div class="grid-3">
+  {% for campaign in campaigns %}
+  <div class="card">
+    <div class="card-title">
+      <a href="/campaign/{{ campaign.id }}" style="color: #fff; text-decoration: none;">{{ campaign.title }}</a>
+      <span class="badge badge-{{ campaign.status.lower() }}">{{ campaign.status }}</span>
+    </div>
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+      {{ campaign.human_brief[:120] }}...
+    </p>
+    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem; font-size: 0.85rem;">
+      <span>Week {{ campaign.week_number }}</span>
+      <a href="/campaign/{{ campaign.id }}" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">Manage Campaign &rarr;</a>
+    </div>
+  </div>
+  {% else %}
+  <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+    <p style="color: var(--text-muted); margin-bottom: 1rem;">No campaigns found yet.</p>
+    <button onclick="document.getElementById('openCreateModal').click()" class="btn">Create Your First Campaign</button>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- CREATE CAMPAIGN MODAL -->
+<div id="createModal" class="modal">
+  <div class="modal-content">
+    <h2 style="margin-bottom: 1rem;">Create Campaign from Human Brief</h2>
+    <form id="createCampaignForm">
+      <div class="form-group">
+        <label for="campaignTitle">Campaign Title</label>
+        <input type="text" id="campaignTitle" class="form-control" placeholder="e.g. Budget Espresso Machine Launch" required>
+      </div>
+      <div class="form-group">
+        <label for="humanBrief">Human Operator Brief</label>
+        <textarea id="humanBrief" class="form-control" rows="5" placeholder="Enter brief: e.g. We are launching a budget espresso machine for students. Run a two-week awareness campaign across our three channels, target price-sensitive 18-25 year olds, keep tone playful, don't over-promise." required>We are launching a budget espresso machine for students. Run a two-week awareness campaign across our three channels, target price-sensitive 18–25 year olds, keep the tone playful, don't over-promise.</textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+        <button type="button" id="closeCreateModal" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn">Submit Brief to Orchestrator</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

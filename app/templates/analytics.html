@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics & Week 1 vs Week 2 Feedback Loop{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">📊 Analytics & Closed-Loop Performance Improvement</h1>
+    <p style="color: var(--text-muted);">Empirical metrics discovery, evidence-backed strategy recommendations, and Week 1 vs Week 2 comparative analysis.</p>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-title">Select Campaign</div>
+  <select onchange="window.location.href='/analytics?campaign_id=' + this.value" class="form-control" style="max-width: 400px;">
+    {% for c in campaigns %}
+      <option value="{{ c.id }}" {% if selected_campaign.id == c.id %}selected{% endif %}>{{ c.title }} ({{ c.id }})</option>
+    {% endfor %}
+  </select>
+</div>
+
+<!-- WEEK 1 VS WEEK 2 COMPARISON CARDS -->
+{% if comparison and comparison.deltas %}
+<h2 style="margin-bottom: 1rem; font-size: 1.3rem;">⚡ Week 1 vs Week 2 Performance Comparison</h2>
+<div class="grid-3" style="margin-bottom: 2rem;">
+  <div class="card">
+    <div class="card-title">Total Impressions</div>
+    <div style="font-size: 1.8rem; font-weight: 700;">{{ comparison.deltas.impressions.w2 }} <span style="font-size: 1rem; color: var(--text-muted);">from {{ comparison.deltas.impressions.w1 }}</span></div>
+    <div class="metric-delta delta-pos" style="margin-top: 0.4rem; font-size: 1.1rem;">{{ comparison.deltas.impressions.pct }} Growth</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Average Engagement Rate</div>
+    <div style="font-size: 1.8rem; font-weight: 700;">{{ comparison.deltas.avg_engagement_rate.w2 }} <span style="font-size: 1rem; color: var(--text-muted);">from {{ comparison.deltas.avg_engagement_rate.w1 }}</span></div>
+    <div class="metric-delta delta-pos" style="margin-top: 0.4rem; font-size: 1.1rem;">{{ comparison.deltas.avg_engagement_rate.pct }} Delta</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Audience Comments</div>
+    <div style="font-size: 1.8rem; font-weight: 700;">{{ comparison.deltas.comments.w2 }} <span style="font-size: 1rem; color: var(--text-muted);">from {{ comparison.deltas.comments.w1 }}</span></div>
+    <div class="metric-delta delta-pos" style="margin-top: 0.4rem; font-size: 1.1rem;">{{ comparison.deltas.comments.pct }} Change</div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-title">Detailed Metrics Breakdown</div>
+  <div class="metric-row"><span>Likes</span><span>Week 1: {{ comparison.deltas.likes.w1 }} &rarr; Week 2: <strong>{{ comparison.deltas.likes.w2 }}</strong></span><span class="metric-delta delta-pos">{{ comparison.deltas.likes.pct }}</span></div>
+  <div class="metric-row"><span>Shares</span><span>Week 1: {{ comparison.deltas.shares.w1 }} &rarr; Week 2: <strong>{{ comparison.deltas.shares.w2 }}</strong></span><span class="metric-delta delta-pos">{{ comparison.deltas.shares.pct }}</span></div>
+  <div class="metric-row"><span>Saves</span><span>Week 1: {{ comparison.deltas.saves.w1 }} &rarr; Week 2: <strong>{{ comparison.deltas.saves.w2 }}</strong></span><span class="metric-delta delta-pos">{{ comparison.deltas.saves.pct }}</span></div>
+  <div class="metric-row"><span>Clicks</span><span>Week 1: {{ comparison.deltas.clicks.w1 }} &rarr; Week 2: <strong>{{ comparison.deltas.clicks.w2 }}</strong></span><span class="metric-delta delta-pos">{{ comparison.deltas.clicks.pct }}</span></div>
+  <div class="metric-row"><span>Follower Delta</span><span>Week 1: {{ comparison.deltas.follower_delta.w1 }} &rarr; Week 2: <strong>{{ comparison.deltas.follower_delta.w2 }}</strong></span><span class="metric-delta delta-pos">{{ comparison.deltas.follower_delta.pct }}</span></div>
+</div>
+{% endif %}
+
+<!-- ANALYTICS AGENT EVIDENCE-BACKED RECOMMENDATIONS -->
+{% if selected_campaign.week1_analytics_report %}
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-title">
+    <span>💡 Analytics Agent Discovered Patterns & Recommendations</span>
+    <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">AnalyticsAgent Evidence</span>
+  </div>
+
+  <div style="margin-top: 1rem; margin-bottom: 1.5rem;">
+    <h4 style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem;">Discovered Patterns Across Simulator Signals</h4>
+    <div style="background: var(--bg-dark); padding: 1rem; border-radius: 8px; font-size: 0.9rem; border: 1px solid var(--border-color);">
+      {% for k, v in selected_campaign.week1_analytics_report.discovered_patterns.items() %}
+        <p style="margin-bottom: 0.4rem;"><strong>{{ k|capitalize }}:</strong> {{ v }}</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <h4 style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem;">Actionable Recommendations Fed to Strategy for Week 2</h4>
+  <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+    {% for rec in selected_campaign.week1_analytics_report.recommendations %}
+    <div style="background: var(--bg-dark); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-success); font-size: 0.9rem; border: 1px solid var(--border-color);">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+        <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">{{ rec.channel }} / {{ rec.category }}</span>
+      </div>
+      <p style="font-weight: 600; color: #fff; margin-bottom: 0.3rem;">Instruction: "{{ rec.recommendation }}"</p>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">Proof / Evidence: {{ rec.evidence }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

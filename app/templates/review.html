@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Human Approval Gate — {{ campaign.title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">⚠️ Human Approval Gate</h1>
+    <p style="color: var(--text-muted);">Review agent-generated strategy, posts, compliance scores, and creative briefs before publishing.</p>
+  </div>
+  <button onclick="triggerPipeline('{{ campaign.id }}', 'approve')" class="btn btn-success">
+    ✅ Approve Entire Campaign & Schedule
+  </button>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-title">Campaign Brief & Target Audience</div>
+  <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">"{{ campaign.human_brief }}"</p>
+  <div style="font-size: 0.85rem; color: var(--text-muted);">
+    <strong>Channels:</strong> {{ campaign.channels|join(', ') }} | 
+    <strong>Pillars:</strong> {{ campaign.content_pillars|join(', ') }}
+  </div>
+</div>
+
+<h2 style="margin-bottom: 1rem; font-size: 1.3rem;">Individual Post Approvals</h2>
+<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+  {% for post in campaign.posts %}
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <div>
+        <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">{{ post.channel }}</span>
+        <span class="badge" style="background: var(--bg-dark); color: var(--text-muted); margin-left: 0.5rem;">{{ post.format }}</span>
+        <span class="badge badge-{{ post.compliance_status.lower() }}" style="margin-left: 0.5rem;">Compliance: {{ post.compliance_status }}</span>
+      </div>
+      <div>
+        <span class="badge badge-{{ post.human_approval_status.lower() }}">Human Gate: {{ post.human_approval_status }}</span>
+      </div>
+    </div>
+
+    <div style="background: var(--bg-dark); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+      <h4 style="color: var(--accent-primary); font-size: 0.95rem; margin-bottom: 0.4rem;">Hook: "{{ post.hook }}"</h4>
+      <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">{{ post.copy }}</p>
+      <p style="font-size: 0.85rem; color: var(--accent-warning);">CTA: {{ post.cta }}</p>
+    </div>
+
+    {% if post.creative_brief %}
+    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+      <strong>Creative Direction:</strong> {{ post.creative_brief.visual_concept }} ({{ post.creative_brief.asset_type }})
+    </div>
+    {% endif %}
+
+    <div style="display: flex; gap: 0.75rem; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+      <button onclick="approvePost('{{ post.id }}', 'REJECT')" class="btn btn-secondary" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4);">
+        ❌ Reject Post
+      </button>
+      <button onclick="approvePost('{{ post.id }}', 'REVISION')" class="btn btn-secondary">
+        ✍️ Request Revision
+      </button>
+      <button onclick="approvePost('{{ post.id }}', 'APPROVE')" class="btn btn-success">
+        ✅ Approve Post
+      </button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
