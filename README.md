@@ -1,7 +1,9 @@
 # Multi-Agent Social Media AI Company
 
+> 🚀 **Live Public Web Demo**: [https://multi-agent-social-ai-1.onrender.com](https://multi-agent-social-ai-1.onrender.com)
+>
 > **Prodigal AI Intern Hiring — Round 1 Task 1 Submission**
-> A fully local, multi-agent AI social media company running on Ollama (`gemma3:4b`), featuring 8 specialized agents, compliance guardrails, human approval gate, 3-channel mock social platform with hidden signals, community manager, and a closed-loop weekly analytics improvement engine.
+> A fully local/cloud multi-agent AI social media company running on Ollama (`gemma3:4b`), featuring 8 specialized agents, compliance guardrails, human approval gate, 3-channel mock social platform with hidden signals, community manager, and a closed-loop weekly analytics improvement engine.
 
 ---
 
