@@ -8,8 +8,8 @@ class Settings:
     # Ollama Local Configuration
     OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "gemma4:cloud").replace("ollama run", "").replace("ollama pull", "").strip()
-    OLLAMA_TIMEOUT: float = float(os.getenv("OLLAMA_TIMEOUT", "300.0"))
-    MAX_LLM_RETRIES: int = 3
+    OLLAMA_TIMEOUT: float = float(os.getenv("OLLAMA_TIMEOUT", "3.0"))
+    MAX_LLM_RETRIES: int = 1
     
     # Database Configuration
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

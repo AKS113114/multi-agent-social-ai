@@ -65,6 +65,8 @@ class OllamaClient:
                 response.raise_for_status()
                 data = response.json()
                 return data.get("response", "").strip()
+        except (httpx.ConnectError, httpx.ConnectTimeout):
+            raise RuntimeError("Ollama not available — using cloud fallback.")
         except httpx.HTTPError as e:
             logger.error(f"Ollama HTTP request failed: {e}")
             raise RuntimeError(f"Ollama local LLM connection failed: {e}")
@@ -112,6 +114,9 @@ class OllamaClient:
             except Exception as e:
                 logger.error(f"Exception during generate_json attempt {attempt}: {e}")
                 last_error = str(e)
+                # If Ollama is simply not running, no point retrying — go straight to fallback
+                if "not available" in str(e) or "Connection refused" in str(e):
+                    break
                 break
         
         logger.warning(f"Ollama unavailable or schema generation failed ({last_error}). Using fallback schema generator for {schema.__name__}.")
