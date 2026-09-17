@@ -126,14 +126,20 @@ class OllamaClient:
         name = schema.__name__
         if name == "StrategyOutput":
             return schema(
-                target_audience="Price-conscious 18-25 year old college students & young professionals",
-                campaign_objectives="Drive awareness for affordable coffee solutions",
+                objective="Drive awareness and engagement for the campaign",
+                target_audience={
+                    "demographic": "18-35 year old professionals and students",
+                    "pain_points": ["Information overload", "Finding reliable solutions", "Budget constraints"],
+                    "preferred_channels": ["Pulse", "Forum", "ProNet"]
+                },
+                channels=["Pulse", "Forum", "ProNet"],
+                duration_days=14,
                 posting_cadence={"Pulse": "Weekly - 18:00", "Forum": "Weekly - 14:00", "ProNet": "Weekly - 09:00"},
-                content_pillars=["Affordability", "Ease of Use", "Student Lifestyle"],
-                kpis=["Impressions", "Engagement Rate", "Shares"],
-                strategic_hypotheses=["Short-form video drives high initial engagement", "Open questions in forums increase comment volume"]
+                content_pillars=["Value Proposition", "Community Engagement", "Thought Leadership"],
+                kpis=["Impressions", "Engagement Rate", "Shares", "Click-through Rate"],
+                strategic_hypotheses=["Short-form video drives high initial engagement", "Open questions in forums increase comment volume", "Professional insights on ProNet build brand authority"]
             )
-        elif name == "ContentWriterOutput":
+        elif name == "ContentOutput":
             return schema(
                 posts=[
                     {
@@ -177,7 +183,7 @@ class OllamaClient:
                 on_screen_text="Dorm-friendly. Barista quality. $99.",
                 brand_direction="Clean, vibrant, high-contrast visual styling"
             )
-        elif name == "ComplianceReviewOutput":
+        elif name == "ComplianceOutput":
             return schema(
                 approved=True,
                 score=100.0,
@@ -185,32 +191,47 @@ class OllamaClient:
                 required_changes=[],
                 reasoning="Content meets all brand safety, accuracy, and legal compliance standards."
             )
-        elif name == "CommunityManagerOutput":
+        elif name == "CommunityResponseOutput":
             return schema(
-                replies=[
-                    {
-                        "comment_id": "cmt_1",
-                        "reply_text": "Thanks for reaching out! Yes, it comes with a 1-year warranty and easy cleaning instructions! ☕",
-                        "sentiment": "Positive",
-                        "requires_escalation": False,
-                        "escalation_reason": ""
-                    }
-                ]
+                sentiment="positive",
+                is_sensitive=False,
+                response_draft="Thanks for reaching out! We appreciate your feedback and are here to help! ☕",
+                reasoning="Comment classified as positive engagement. Standard community response generated."
             )
         elif name == "AnalyticsOutput":
             return schema(
-                top_posts_analysis="Posts scheduled at peak hours (18:00) with clear CTAs achieved top engagement rates.",
-                bottom_posts_analysis="Longer copy posts experienced slightly lower completion rates.",
-                comment_sentiment_summary="Overall positive sentiment focused on price point and ease of use.",
+                kpi_evaluation={"impressions": "On target", "engagement_rate": "Above benchmark", "shares": "Meeting expectations"},
+                top_posts_analysis=["Posts scheduled at peak hours (18:00) with clear CTAs achieved top engagement rates."],
+                bottom_posts_analysis=["Longer copy posts experienced slightly lower completion rates."],
+                comment_sentiment_summary="Overall positive sentiment focused on value proposition and ease of use.",
                 discovered_patterns=[
                     {
-                        "pattern": "Direct question hooks drive 28% higher comment rates on Forum posts.",
-                        "evidence": "n=1, Impressions: 5323, ER: 13.26%",
-                        "confidence": "Medium",
+                        "pattern": "Direct question hooks drive higher comment rates on Forum posts.",
+                        "evidence": "n=1, ER: 13.26%",
+                        "confidence": "Low (n=1 sample)",
                         "actionable_instruction": "Use open-ended question hooks for all Forum content."
                     }
                 ],
-                week2_recommendations=["Shorten ProNet copy length", "Schedule Pulse posts at 18:00 peak window"]
+                recommendations=[
+                    {
+                        "channel": "Pulse",
+                        "category": "timing",
+                        "observation": "Peak engagement at 18:00 window",
+                        "evidence": "n=1 post, ER: 12.5%",
+                        "hypothesis": "After-work browsing drives higher Pulse engagement",
+                        "confidence": "Low (n=1 sample)",
+                        "recommendation": "Continue scheduling Pulse posts at 18:00"
+                    },
+                    {
+                        "channel": "Forum",
+                        "category": "copy_length",
+                        "observation": "Question-based hooks received higher comment volume",
+                        "evidence": "n=1 post, Comments: 8",
+                        "hypothesis": "Open-ended questions encourage community participation",
+                        "confidence": "Low (n=1 sample)",
+                        "recommendation": "Use question hooks for all Forum posts"
+                    }
+                ]
             )
         try:
             return schema()
