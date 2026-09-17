@@ -44,12 +44,16 @@
   <div class="grid-3" style="margin-top: 1rem;">
     <div>
       <h4 style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Target Audience</h4>
-      <p style="font-weight: 600; margin-top: 0.25rem;">{{ campaign.target_audience.demographic }}</p>
-      <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
-        {% for p in campaign.target_audience.pain_points %}
-          <li>{{ p }}</li>
-        {% endfor %}
-      </ul>
+      {% if campaign.target_audience is mapping %}
+        <p style="font-weight: 600; margin-top: 0.25rem;">{{ campaign.target_audience.get('demographic', '') }}</p>
+        <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+          {% for p in campaign.target_audience.get('pain_points', []) %}
+            <li>{{ p }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p style="font-weight: 600; margin-top: 0.25rem;">{{ campaign.target_audience }}</p>
+      {% endif %}
     </div>
     <div>
       <h4 style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Content Pillars</h4>
@@ -110,7 +114,7 @@
 
     {% if post.compliance_reviews %}
     <div style="margin-top: 0.75rem; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); padding: 0.75rem; border-radius: 6px; font-size: 0.85rem;">
-      <h5 style="color: var(--accent-warning);">Compliance Review (Attempt #{{ post.compliance_reviews[-1].attempt }}): Score {{ post.compliance_reviews[-1].score }}/100</h5>
+      <h5 style="color: var(--accent-warning);">Compliance Review (Attempt #{{ post.compliance_reviews[-1].attempt_number }}): Score {{ post.compliance_reviews[-1].score }}/100</h5>
       <p style="color: var(--text-muted);">{{ post.compliance_reviews[-1].reasoning }}</p>
     </div>
     {% endif %}

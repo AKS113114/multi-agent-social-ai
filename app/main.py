@@ -69,14 +69,20 @@ def dashboard_page(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/campaign/{campaign_id}")
 def campaign_detail_page(campaign_id: str, request: Request, db: Session = Depends(get_db)):
-    campaign = CampaignService.get_campaign_full(db, campaign_id)
-    if not campaign:
-        raise HTTPException(status_code=404, detail="Campaign not found")
-    return templates.TemplateResponse(
-        request=request,
-        name="campaign.html",
-        context={"active_tab": "dashboard", "campaign": campaign}
-    )
+    try:
+        campaign = CampaignService.get_campaign_full(db, campaign_id)
+        if not campaign:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+        return templates.TemplateResponse(
+            request=request,
+            name="campaign.html",
+            context={"active_tab": "dashboard", "campaign": campaign}
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Campaign page error for {campaign_id}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error loading campaign: {str(e)}")
 
 @app.get("/review/{campaign_id}")
 def human_review_page(campaign_id: str, request: Request, db: Session = Depends(get_db)):
